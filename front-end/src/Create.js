@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-//import { setWebSocketConnection } from "./Websocket";
+import { setWebSocketConnection, getWebSocketConnection } from "./Websocket";
 
 const Create = () => {
     const [title, setTitle] = useState('');
@@ -13,10 +13,8 @@ const handleTitleChange = (e) => {
     
 const handleSubmit = async (e) => {
     e.preventDefault();
-
-
     try {
-        const response = await fetch('/session', {
+        const response = await fetch('http://localhost:3000/session', {
             method: 'POST',
             headers:  {
                 'Content-Type': 'application/json'
@@ -30,8 +28,8 @@ const handleSubmit = async (e) => {
         throw new Error(data.error);
     }
     const data = await response.json();
-    //const ws = new WebSocket(`ws://localhost:3002/${data.session_id}`);
-    //setWebSocketConnection(ws);
+    const ws = new WebSocket(`ws://localhost:3002/?isProfessor=true&session_id=${data.session_id}`);
+    setWebSocketConnection(ws);
     navigate(`/questions/${data.session_id}`, { state: {session_id: data.session_id, code: data.code}});
     } catch (error) {
         console.error("Error creating session:", error);

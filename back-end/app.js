@@ -2,6 +2,7 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const { uniqueNamesGenerator, adjectives, colors, animals } = require("unique-names-generator");
 const app = express();
+const cors = require("cors");
 const { v4: uuidv4 } = require('uuid');
 const WebSocket = require('ws');
 const wss = new WebSocket.Server({port: 3002});
@@ -22,17 +23,18 @@ const question_db = new sqlite.Database('./question.db', sqlite.OPEN_READWRITE, 
 
 
 app.use(bodyParser.json());
+app.use(cors());
 const professorConnections = {};
 const studentConnections = {};
 
 //Set up web socket
 wss.on('connection', (ws, req) => {
-  const isProfessor = req.headers['isProfessor'];
+  const isProfessor = req.url.includes('isProfessor=true');
   if (isProfessor) {
     console.log('New professor Websocket connection');
-    const session_id = req.headers['session_id'];
+    const session_id = new URLSearchParams(req.url).get('session_id');
     professorConnections[session_id] = ws;
-    
+
 
     ws.on('close', () => {
       const index = connections.indexOf(ws);
@@ -46,10 +48,6 @@ wss.on('connection', (ws, req) => {
     console.log('New student Websocket connection');
 
   }
-  console.log(session_id, "websocket id");
-  connections[session_id] = ws;
-
-
   // Handle professor dashboard connections, e.g., store the WebSocket connection in an array or map
 });
 
