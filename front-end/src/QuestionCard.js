@@ -1,7 +1,8 @@
 const QuestionCard = ({ question, onAnswer, onSkip, onReject }) => {
-    const { content, student_name } = question;
+    const { question_id, content, status, student_name } = question;
     return (
         <div className="questioncard">
+        <p>Question_ID: {question_id}</p>
         <p>Content: {content}</p>
         <p>Student Name: {student_name}</p>
         <button id="answer" onClick={onAnswer}>Answer</button>

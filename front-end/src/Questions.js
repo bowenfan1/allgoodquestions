@@ -3,13 +3,14 @@ import { useLocation } from "react-router-dom";
 import { useState } from "react";
 import { useEffect } from "react";
 import QuestionCard from "./QuestionCard";
+import { getWebSocketConnection } from "./Websocket";
 
 const Questions = () => {
     const location = useLocation();
     const code = location.state.code;
     const session_id = location.state.session_id;
     const navigate = useNavigate();
-    //const ws = getWebSocketConnection();
+    const ws = getWebSocketConnection();
     const [receivedMessage, setReceivedMessage] = useState([]);
 
     useEffect(() => {
@@ -27,7 +28,14 @@ const Questions = () => {
         };
     }, [ws]);
 
-const handleAnswer = () => {
+const handleAnswer = (question) => {
+    const message = {
+        question_id: question.question_id,
+        status: 'answered',
+        session_id: session_id
+      };
+    console.log("hello");
+    ws.send(JSON.stringify(message));
 
 }
 
@@ -71,7 +79,9 @@ const handleClick = async (e)  => {
             <p>Code: {code}</p>
             <br></br>
             <button onClick={handleClick}>End Session</button>
-            {receivedMessage.map((question, index) => (
+            {receivedMessage
+            .filter(question => question.status === 'pending' || question.status === 'skipped')
+            .map((question, index) => (
             <QuestionCard
             key={index}
             question={question}
