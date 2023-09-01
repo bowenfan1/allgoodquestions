@@ -34,17 +34,26 @@ const handleAnswer = (question) => {
         status: 'answered',
         session_id: session_id
       };
-    console.log("hello");
     ws.send(JSON.stringify(message));
 
 }
 
-const handleSkip = () => {
-
+const handleSkip = (question) => {
+    const message = {
+        question_id: question.question_id,
+        status: 'skipped',
+        session_id: session_id
+    };
+    ws.send(JSON.stringify(message));
 }
 
-const handleReject = () => {
-
+const handleReject = (question) => {
+    const message = {
+        question_id: question.question_id,
+        status: 'rejected',
+        session_id: session_id
+    };
+    ws.send(JSON.stringify(message));
 }
 
 
